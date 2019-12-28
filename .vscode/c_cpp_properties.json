@@ -1,0 +1,59 @@
+{
+    "configurations": [
+        {
+            "name": "!!! WARNING !!! AUTO-GENERATED FILE, PLEASE DO NOT MODIFY IT AND USE https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags"
+        },
+        {
+            "name": "Win32",
+            "includePath": [
+                "d:/Gizmo/Habitot/gizmo-space-shuttle/ColorWireBoard/include",
+                "d:/Gizmo/Habitot/gizmo-space-shuttle/ColorWireBoard/src",
+                "C:/Users/carbi/.platformio/packages/framework-arduino-avr/cores/arduino",
+                "C:/Users/carbi/.platformio/packages/framework-arduino-avr/variants/micro",
+                "C:/Users/carbi/.platformio/lib/Adafruit LED Backpack Library_ID25",
+                "C:/Users/carbi/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                "C:/Users/carbi/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                "C:/Users/carbi/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                "C:/Users/carbi/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                "C:/Users/carbi/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                "C:/Users/carbi/.platformio/packages/tool-unity",
+                ""
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "d:/Gizmo/Habitot/gizmo-space-shuttle/ColorWireBoard/include",
+                    "d:/Gizmo/Habitot/gizmo-space-shuttle/ColorWireBoard/src",
+                    "C:/Users/carbi/.platformio/packages/framework-arduino-avr/cores/arduino",
+                    "C:/Users/carbi/.platformio/packages/framework-arduino-avr/variants/micro",
+                    "C:/Users/carbi/.platformio/lib/Adafruit LED Backpack Library_ID25",
+                    "C:/Users/carbi/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                    "C:/Users/carbi/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                    "C:/Users/carbi/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                    "C:/Users/carbi/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                    "C:/Users/carbi/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                    "C:/Users/carbi/.platformio/packages/tool-unity",
+                    ""
+                ]
+            },
+            "defines": [
+                "PLATFORMIO=40100",
+                "ARDUINO_AVR_MICRO",
+                "F_CPU=16000000L",
+                "ARDUINO_ARCH_AVR",
+                "ARDUINO=10808",
+                "USB_VID=0x2341",
+                "USB_PID=0x8037",
+                "USB_PRODUCT=\"Arduino Micro\"",
+                "USB_MANUFACTURER=\"Arduino\"",
+                "__AVR_ATmega32U4__",
+                ""
+            ],
+            "intelliSenseMode": "clang-x64",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "compilerPath": "\"C:/Users/carbi/.platformio/packages/toolchain-atmelavr/bin/avr-gcc.exe\" -mmcu=atmega32u4"
+        }
+    ],
+    "version": 4
+}
