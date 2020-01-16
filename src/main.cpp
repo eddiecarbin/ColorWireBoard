@@ -26,6 +26,8 @@
 #include <platforms.h>
 #include <power_mgt.h>
 
+#include "NeonSectionController.h"
+
 /* Plasma
 
    By: Andrew Tuline
@@ -71,11 +73,6 @@ uint8_t max_bright = 255; // Overall brightness definition. It can be changed on
 //struct CRGB leds[NUM_LEDS]; // Initialize our LED array.
 CRGB leds[NUM_LEDS];
 
-int s0 = 0;
-int s1 = 4;
-int s2 = 8;
-int s3 = 12;
-
 int pinData[4] = {0, 0, 0, 0};
 
 float a0, a1, a2, a3;
@@ -98,6 +95,11 @@ void drawSection(int start, CRGB color, int length = 0)
   }
 }
 
+NeonSectionController neonController0(0, 267);
+NeonSectionController neonController1(4, 512);
+NeonSectionController neonController2(8, 768);
+NeonSectionController neonController3(12, 1025);
+
 void setup()
 {
 
@@ -114,6 +116,10 @@ void setup()
 
   FastLED.setBrightness(max_bright);
 
+  neonController0.initialize(leds);
+  neonController1.initialize(leds);
+  neonController2.initialize(leds);
+
   //set_max_power_in_volts_and_milliamps(5, 500);               // FastLED Power management set at 5V, 500mA.
 
   //  currentPalette = OceanColors_p; //HeatColors_p
@@ -123,9 +129,8 @@ void setup()
 
 } // setup()
 
-
-void resetBoard () {
-  
+void resetBoard()
+{
 }
 
 bool correctPinOrder(int arr[], int n)
@@ -147,17 +152,17 @@ bool correctPinOrder(int arr[], int n)
 void loop()
 {
   //leds[4] = CRGB::Red;
-  drawSection(s1, CRGB::FairyLight, 4);
-  drawSection(s3, CRGB::Red, 4);
-  drawSection(s0, CRGB::Blue, 4);
+  drawSection(0, CRGB::FairyLight, 4);
+  drawSection(4, CRGB::Red, 4);
+  drawSection(5, CRGB::Blue, 4);
 
   FastLED.show();
   delay(500);
   // Now turn the LED off, then pause
   //leds[4] = CRGB::Black;
-  drawSection(s1, CRGB::Black, 4);
-  drawSection(s3, CRGB::Black, 4);
-  drawSection(s0, CRGB::Black, 4);
+  //drawSection(s1, CRGB::Black, 4);
+  //drawSection(s3, CRGB::Black, 4);
+  //drawSection(s0, CRGB::Black, 4);
   FastLED.show();
   delay(500);
 
