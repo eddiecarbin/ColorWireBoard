@@ -3,26 +3,38 @@
 
 #include <Arduino.h>
 #include "FastLED.h" // FastLED library. Preferably the latest copy of FastLED 2.1.
+#include <JC_Button.h>
 
 #include <FastLED.h> // for short list
+
+enum WireState
+{
+    OFF,
+    WRONG,
+    CORRECT
+};
 
 class NeonSectionController
 {
 
 public:
-    NeonSectionController( int section, int code);
+    NeonSectionController(int section, int code);
     int getValue(void);
-    void initialize(struct CRGB *data);
+    void initialize(struct CRGB *data, CRGB color);
     void update(void);
-    void drawSection(CRGB color);
+    void setState(WireState state);
+    void drawColor(CRGB color);
     virtual ~NeonSectionController();
 
 private:
     int section;
-    int length;
+    // int length;
     int signal;
     int buttonPin;
-    CRGB* _leds;
+    WireState currentState;
+    CRGB *_leds;
+    CRGB correctColor;
+    // Button cableButton;
 };
 
 #endif /* NEONSECTIONCONTROLLER_H_ */

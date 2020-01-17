@@ -45,10 +45,14 @@
    http://lodev.org/cgtutor/plasma.html
 
 */
+#include <JC_Button.h>
+#include "../lib/SoundPlayer/SoundPlayer.h"
+#include "../lib/FSM/FSM.h"
+#include "../lib/PotMonitor/PotMonitor.h"
 
 // Use qsuba for smooth pixel colouring and qsubd for non-smooth pixel colouring
-#define qsubd(x, b) ((x > b) ? b : 0)     // Digital unsigned subtraction macro. if result <0, then => 0. Otherwise, take on fixed value.
-#define qsuba(x, b) ((x > b) ? x - b : 0) // Analog Unsigned subtraction macro. if result <0, then => 0
+// #define qsubd(x, b) ((x > b) ? b : 0)     // Digital unsigned subtraction macro. if result <0, then => 0. Otherwise, take on fixed value.
+// #define qsuba(x, b) ((x > b) ? x - b : 0) // Analog Unsigned subtraction macro. if result <0, then => 0
 
 #include "FastLED.h" // FastLED library. Preferably the latest copy of FastLED 2.1.
 
@@ -59,8 +63,7 @@
 #endif
 
 // Fixed definitions cannot change on the fly.
-#define LED_DT 6 // Data pin to connect to the strip.
-//#define LED_CK 11                                             // Clock pin for WS2801 or APA102.
+#define LED_DT 6         // Data pin to connect to the strip.
 #define COLOR_ORDER GRB  // It's GRB for WS2812 and BGR for APA102.
 #define LED_TYPE WS2812B // Using APA102, WS2812, WS2801. Don't forget to modify LEDS.addLeds to suit.
 
@@ -75,7 +78,14 @@ CRGB leds[NUM_LEDS];
 
 int pinData[4] = {0, 0, 0, 0};
 
-float a0, a1, a2, a3;
+// float a0, a1, a2, a3;
+Button cablePin0(A0);
+Button cablePin1(A1);
+Button cablePin2(A2);
+Button cablePin3(A3);
+
+PotMonitor volumePot(A5, 12);
+SoundPlayer soundPlayer(18, 15);
 
 int av = 256;
 int bv = 512;
@@ -85,6 +95,11 @@ int dv = 1025;
 int w = 40;
 
 int a, b, c, d, rightSum = 0;
+
+long map2(long x, long in_min, long in_max, long out_min, long out_max)
+{
+  return (x - in_min) * (out_max - out_min + 1) / (in_max - in_min + 1) + out_min;
+}
 
 void drawSection(int start, CRGB color, int length = 0)
 {
@@ -116,14 +131,15 @@ void setup()
 
   FastLED.setBrightness(max_bright);
 
-  neonController0.initialize(leds);
-  neonController1.initialize(leds);
-  neonController2.initialize(leds);
+  cablePin0.begin();
+  cablePin1.begin();
+  cablePin2.begin();
+  cablePin3.begin();
 
-  //set_max_power_in_volts_and_milliamps(5, 500);               // FastLED Power management set at 5V, 500mA.
-
-  //  currentPalette = OceanColors_p; //HeatColors_p
-  //  currentPalette = PAL;
+  neonController0.initialize(leds, CRGB::Red);
+  neonController1.initialize(leds, CRGB::Yellow);
+  neonController2.initialize(leds, CRGB::Blue);
+  neonController3.initialize(leds, CRGB::Green);
 
   Serial.println(" Start up activitiy");
 
@@ -151,10 +167,29 @@ bool correctPinOrder(int arr[], int n)
 
 void loop()
 {
+  if (volumePot.hasUpdated())
+  {
+    long volume = map2(volumePot.getValue(), 0, 1023, 0, 30);
+    Serial.println(volume);
+    soundPlayer.volume(volume);
+  }
+
+  cablePin0.read();
+  cablePin1.read();
+  cablePin2.read();
+  cablePin3.read();
+
+  neonController0.update();
+  neonController1.update();
+  neonController2.update();
+  neonController3.update();
   //leds[4] = CRGB::Red;
-  drawSection(0, CRGB::FairyLight, 4);
-  drawSection(4, CRGB::Red, 4);
-  drawSection(5, CRGB::Blue, 4);
+  // drawSection(0, CRGB::FairyLight, 4);
+  // drawSection(4, CRGB::Red, 4);
+  // drawSection(5, CRGB::Blue, 4);
+
+  // Serial.println("loop");
+  neonController2.drawColor(CRGB::Red);
 
   FastLED.show();
   delay(500);
@@ -163,10 +198,9 @@ void loop()
   //drawSection(s1, CRGB::Black, 4);
   //drawSection(s3, CRGB::Black, 4);
   //drawSection(s0, CRGB::Black, 4);
-  FastLED.show();
-  delay(500);
+  // FastLED.show();
+  // delay(500);
 
-  return;
   //drawSection(0, CRGB::SeaGreen, 4);
   //drawSection(8, CRGB::DarkMagenta, 4);
   //drawSection(12, CRGB::FairyLight, 4);
@@ -176,109 +210,4 @@ void loop()
   ALT_leds[14] = CRGB(255, 255, 0);
   ALT_leds[15] = CRGB(255, 255, 0); */
 
-  FastLED.show();
-  delay(2000);
-
-  return;
-  a0 = analogRead(0);
-  a1 = analogRead(1);
-  a2 = analogRead(2);
-  a3 = analogRead(3);
-  if (a0 > 0)
-  {
-    Serial.println("a = " + String(a) + "   " + String(a0));
-  }
-  if (a1 > 0)
-  {
-    Serial.println("b = " + String(b) + "   " + String(a1));
-  }
-  if (a2 > 0)
-  {
-    Serial.println("c = " + String(c) + "   " + String(a2));
-  }
-  if (a3 > 0)
-  {
-    Serial.println("d = " + String(d) + "   " + String(a3));
-  }
-
-  // Serial.println("right sum = " + String(rightSum));
-
-  if (av - w < a0 && a0 < av + w)
-  {
-    a = 1;
-    /* ALT_leds[0] = CRGB(0, 255, 0);
-    ALT_leds[1] = CRGB(0, 255, 0);
-    ALT_leds[2] = CRGB(0, 255, 0);
-    ALT_leds[3] = CRGB(0, 255, 0); */
-    // FastLED.show();
-  }
-  else
-  {
-    a = 0;
-    /* ALT_leds[0] = CRGB(255, 255, 255);
-    ALT_leds[1] = CRGB(255, 255, 255);
-    ALT_leds[2] = CRGB(255, 255, 255);
-    ALT_leds[3] = CRGB(255, 255, 255); */
-    // FastLED.show();
-  }
-  if (bv - w < a1 && a1 < bv + w)
-  {
-    b = 1;
-    /* ALT_leds[4] = CRGB(0, 0, 255);
-    ALT_leds[5] = CRGB(0, 0, 255);
-    ALT_leds[6] = CRGB(0, 0, 255);
-    ALT_leds[7] = CRGB(0, 0, 255); */
-    //  FastLED.show();
-  }
-  else
-  {
-    b = 0;
-    /* ALT_leds[4] = CRGB(255, 255, 255);
-    ALT_leds[5] = CRGB(255, 255, 255);
-    ALT_leds[6] = CRGB(255, 255, 255);
-    ALT_leds[7] = CRGB(255, 255, 255); */
-    // FastLED.show();
-  }
-  if (cv - w < a2 && a2 < cv + w)
-  {
-    c = 1;
-    /* ALT_leds[8] = CRGB::Red;
-    ALT_leds[9] = CRGB::Red;
-    ALT_leds[10] = CRGB::Red;
-    ALT_leds[11] = CRGB::Red; */
-    //  FastLED.show();
-  }
-  else
-  {
-    c = 0;
-    /* ALT_leds[8] = CRGB(255, 255, 255);
-    ALT_leds[9] = CRGB(255, 255, 255);
-    ALT_leds[10] = CRGB(255, 255, 255);
-    ALT_leds[11] = CRGB(255, 255, 255); */
-    //  FastLED.show();
-  }
-  if (dv - w < a3 && a3 < dv + w)
-  {
-    d = 1;
-    /* ALT_leds[12] = CRGB(255, 255, 0);
-    ALT_leds[13] = CRGB(255, 255, 0);
-    ALT_leds[14] = CRGB(255, 255, 0);
-    ALT_leds[15] = CRGB(255, 255, 0); */
-    //  FastLED.show();
-  }
-  else
-  {
-    d = 0;
-    /* ALT_leds[12] = CRGB(255, 255, 255);
-    ALT_leds[13] = CRGB(255, 255, 255);
-    ALT_leds[14] = CRGB(255, 255, 255);
-    ALT_leds[15] = CRGB(255, 255, 255); */
-    // FastLED.show();
-  }
-
-  rightSum = a + b + c + d;
-
-  FastLED.show();
-
-  delay(500);
 }

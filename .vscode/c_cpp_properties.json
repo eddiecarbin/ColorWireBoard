@@ -8,6 +8,7 @@
             "includePath": [
                 "d:/Gizmo/Habitot/gizmo-space-shuttle/ColorWireBoard/include",
                 "d:/Gizmo/Habitot/gizmo-space-shuttle/ColorWireBoard/src",
+                "C:/Users/carbi/.platformio/lib/JC_Button_ID77/src",
                 "C:/Users/carbi/.platformio/lib/FastLED_ID126",
                 "C:/Users/carbi/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
                 "C:/Users/carbi/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
@@ -19,7 +20,6 @@
                 "C:/Users/carbi/.platformio/lib/DFRobotDFPlayerMini",
                 "C:/Users/carbi/.platformio/lib/FlexiTimer2_ID138",
                 "C:/Users/carbi/.platformio/lib/HX711_ID1100",
-                "C:/Users/carbi/.platformio/lib/JC_Button_ID77/src",
                 "C:/Users/carbi/.platformio/lib/PulseSensor Playground_ID2049/src",
                 "C:/Users/carbi/.platformio/lib/SimpleTimer_ID419",
                 "C:/Users/carbi/.platformio/lib/TimerOne_ID131",
@@ -35,6 +35,7 @@
                 "path": [
                     "d:/Gizmo/Habitot/gizmo-space-shuttle/ColorWireBoard/include",
                     "d:/Gizmo/Habitot/gizmo-space-shuttle/ColorWireBoard/src",
+                    "C:/Users/carbi/.platformio/lib/JC_Button_ID77/src",
                     "C:/Users/carbi/.platformio/lib/FastLED_ID126",
                     "C:/Users/carbi/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
                     "C:/Users/carbi/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
@@ -46,7 +47,6 @@
                     "C:/Users/carbi/.platformio/lib/DFRobotDFPlayerMini",
                     "C:/Users/carbi/.platformio/lib/FlexiTimer2_ID138",
                     "C:/Users/carbi/.platformio/lib/HX711_ID1100",
-                    "C:/Users/carbi/.platformio/lib/JC_Button_ID77/src",
                     "C:/Users/carbi/.platformio/lib/PulseSensor Playground_ID2049/src",
                     "C:/Users/carbi/.platformio/lib/SimpleTimer_ID419",
                     "C:/Users/carbi/.platformio/lib/TimerOne_ID131",
