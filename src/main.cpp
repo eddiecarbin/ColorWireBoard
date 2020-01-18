@@ -63,38 +63,23 @@
 #endif
 
 // Fixed definitions cannot change on the fly.
-#define LED_DT 6         // Data pin to connect to the strip.
 #define COLOR_ORDER GRB  // It's GRB for WS2812 and BGR for APA102.
-#define LED_TYPE WS2812B // Using APA102, WS2812, WS2801. Don't forget to modify LEDS.addLeds to suit.
-
+#define LED_TYPE UCS1903 // Using APA102, WS2812, WS2801. Don't forget to modify LEDS.addLeds to suit.
 #define DATA_PIN 6
 
 #define NUM_LEDS 16
-
+#define FRAME_PER_SECOND 60
+#define MIN_SIGNAL 100
+#define TEST_RANGE 70
 uint8_t max_bright = 255; // Overall brightness definition. It can be changed on the fly.
 
 //struct CRGB leds[NUM_LEDS]; // Initialize our LED array.
 CRGB leds[NUM_LEDS];
 
-int pinData[4] = {0, 0, 0, 0};
+int pinData[4] = {203, 383, 615, 1023};
 
-// float a0, a1, a2, a3;
-Button cablePin0(A0);
-Button cablePin1(A1);
-Button cablePin2(A2);
-Button cablePin3(A3);
-
-PotMonitor volumePot(A5, 12);
-SoundPlayer soundPlayer(18, 15);
-
-int av = 256;
-int bv = 512;
-int cv = 768;
-int dv = 1025;
-
-int w = 40;
-
-int a, b, c, d, rightSum = 0;
+//PotMonitor volumePot(A5, 12);
+//SoundPlayer soundPlayer(18, 15);
 
 long map2(long x, long in_min, long in_max, long out_min, long out_max)
 {
@@ -117,24 +102,11 @@ NeonSectionController neonController3(12, 1025);
 
 void setup()
 {
-
   Serial.begin(9600); // Initialize serial port for debugging.
-  delay(1000);        // Soft startup to ease the flow of electrons.
-
-  // LEDS.addLeds<LED_TYPE, LED_DT, LED_CK, COLOR_ORDER>(leds, NUM_LEDS);  //WS2801 and APA102
-  //LEDS.addLeds<LED_TYPE, LED_DT, COLOR_ORDER>(leds, NUM_LEDS);
-  //LEDS.addLeds<ALT_LED_TYPE, DATA_PIN, ALT_COLOR_ORDER>(ALT_leds, ALT_NUM_LEDS); // WS2812
+  delay(3000);        // Soft startup to ease the flow of electrons.
 
   FastLED.addLeds<UCS1903, DATA_PIN, BRG>(leds, NUM_LEDS);
-
-  //  FastLED.addLeds<WS2812B, DATA_PIN, GRB>(ALT_leds, ALT_NUM_LEDS);
-
   FastLED.setBrightness(max_bright);
-
-  cablePin0.begin();
-  cablePin1.begin();
-  cablePin2.begin();
-  cablePin3.begin();
 
   neonController0.initialize(leds, CRGB::Red);
   neonController1.initialize(leds, CRGB::Yellow);
@@ -142,11 +114,6 @@ void setup()
   neonController3.initialize(leds, CRGB::Green);
 
   Serial.println(" Start up activitiy");
-
-} // setup()
-
-void resetBoard()
-{
 }
 
 bool correctPinOrder(int arr[], int n)
@@ -165,49 +132,92 @@ bool correctPinOrder(int arr[], int n)
   return true;
 }
 
+float a0, a1, a2, a3;
+
+bool inRange(int value, int d, int range)
+{
+  return (((d - range) <= value) && (value <= (d + range)));
+}
+
 void loop()
 {
-  if (volumePot.hasUpdated())
+
+  a0 = analogRead(0);
+  a1 = analogRead(1);
+  a2 = analogRead(2);
+  a3 = analogRead(3);
+
+  if (a0 > MIN_SIGNAL)
   {
-    long volume = map2(volumePot.getValue(), 0, 1023, 0, 30);
-    Serial.println(volume);
-    soundPlayer.volume(volume);
+    Serial.println("high a0 " + String(a0));
+    if (inRange(a0, pinData[0], TEST_RANGE))
+    {
+      neonController0.setState(WireState::CORRECT);
+    }
+    else
+    {
+      neonController0.setState(WireState::WRONG);
+    }
+  }
+  else
+  {
+    neonController0.setState(WireState::OFF);
+  }
+  if (a1 > MIN_SIGNAL)
+  {
+    Serial.println("high a1 " + String(a1));
+    if (inRange(a1, pinData[1], TEST_RANGE))
+    {
+      neonController1.setState(WireState::CORRECT);
+    }
+    else
+    {
+      neonController1.setState(WireState::WRONG);
+    }
+  }
+  else
+  {
+    neonController1.setState(WireState::OFF);
+  }
+  if (a2 > MIN_SIGNAL)
+  {
+    Serial.println("high a2 " + String(a2));
+    if (inRange(a2, pinData[2], TEST_RANGE))
+    {
+      neonController2.setState(WireState::CORRECT);
+    }
+    else
+    {
+      neonController2.setState(WireState::WRONG);
+    }
+  }
+  else
+  {
+    neonController2.setState(WireState::OFF);
+  }
+  if (a3 > MIN_SIGNAL)
+  {
+    Serial.println("high a3 " + String(a3));
+    if (inRange(a3, pinData[3], TEST_RANGE))
+    {
+      neonController3.setState(WireState::CORRECT);
+    }
+    else
+    {
+      neonController3.setState(WireState::WRONG);
+    }
+  }
+  else
+  {
+    neonController3.setState(WireState::OFF);
   }
 
-  cablePin0.read();
-  cablePin1.read();
-  cablePin2.read();
-  cablePin3.read();
 
   neonController0.update();
   neonController1.update();
   neonController2.update();
   neonController3.update();
-  //leds[4] = CRGB::Red;
-  // drawSection(0, CRGB::FairyLight, 4);
-  // drawSection(4, CRGB::Red, 4);
-  // drawSection(5, CRGB::Blue, 4);
-
-  // Serial.println("loop");
-  neonController2.drawColor(CRGB::Red);
 
   FastLED.show();
-  delay(500);
-  // Now turn the LED off, then pause
-  //leds[4] = CRGB::Black;
-  //drawSection(s1, CRGB::Black, 4);
-  //drawSection(s3, CRGB::Black, 4);
-  //drawSection(s0, CRGB::Black, 4);
-  // FastLED.show();
-  // delay(500);
-
-  //drawSection(0, CRGB::SeaGreen, 4);
-  //drawSection(8, CRGB::DarkMagenta, 4);
-  //drawSection(12, CRGB::FairyLight, 4);
-
-  /*   ALT_leds[12] = CRGB(255, 255, 0);
-  ALT_leds[13] = CRGB(255, 255, 0);
-  ALT_leds[14] = CRGB(255, 255, 0);
-  ALT_leds[15] = CRGB(255, 255, 0); */
-
+  delay(1000 / FRAME_PER_SECOND);
 }

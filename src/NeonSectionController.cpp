@@ -7,6 +7,8 @@
 
 int section, signal;
 
+bool gReverseDirection = false;
+
 CRGB *_leds = NULL;
 CRGB correctColor;
 
@@ -22,8 +24,9 @@ void NeonSectionController::initialize(struct CRGB *data, CRGB color)
 {
     this->_leds = data;
     this->correctColor = color;
-    Button cableButton(A0);
     // cableButton.read();
+    //Serial.println("init " + color);
+    //drawColor(color);
 }
 
 void NeonSectionController::drawColor(CRGB color)
@@ -31,13 +34,14 @@ void NeonSectionController::drawColor(CRGB color)
     for (int i = section; i < (section + LED_TOTAL); i++)
     {
         _leds[i] = color;
-        // Serial.println(_leds[i]);
-        // Serial.println(_leds[10000]);
     }
 }
 
 void NeonSectionController::setState(WireState state)
 {
+    if (state == currentState)
+        return;
+
     currentState = state;
 
     switch (currentState)
@@ -50,7 +54,7 @@ void NeonSectionController::setState(WireState state)
         break;
     default:
         // display wrong effect
-        
+
         break;
     }
 }
@@ -65,6 +69,58 @@ void NeonSectionController::update()
     // cableButton.read();
     if (currentState == WireState::WRONG)
     {
+    }
+}
+
+// COOLING: How much does the air cool as it rises?
+// Less cooling = taller flames.  More cooling = shorter flames.
+// Default 50, suggested range 20-100
+#define COOLING 55
+
+// SPARKING: What chance (out of 255) is there that a new spark will be lit?
+// Higher chance = more roaring fire.  Lower chance = more flickery fire.
+// Default 120, suggested range 50-200.
+#define SPARKING 220
+
+void NeonSectionController::effect()
+{
+
+    // Array of temperature readings at each simulation cell
+    static byte heat[LED_TOTAL];
+
+    // Step 1.  Cool down every cell a little
+    for (int i = 0; i < LED_TOTAL; i++)
+    {
+        heat[i] = qsub8(heat[i], random8(0, ((COOLING * 10) / LED_TOTAL) + 2));
+    }
+
+    // Step 2.  Heat from each cell drifts 'up' and diffuses a little
+    for (int k = LED_TOTAL - 1; k >= 2; k--)
+    {
+        heat[k] = (heat[k - 1] + heat[k - 2] + heat[k - 2]) / 3;
+    }
+
+    // Step 3.  Randomly ignite new 'sparks' of heat near the bottom
+    if (random8() < SPARKING)
+    {
+        int y = random8(7);
+        heat[y] = qadd8(heat[y], random8(160, 255));
+    }
+
+    // Step 4.  Map from heat cells to LED colors
+    for (int j = 0; j < LED_TOTAL; j++)
+    {
+        CRGB color = HeatColor(heat[j]);
+        int pixelnumber;
+        if (gReverseDirection)
+        {
+            pixelnumber = (LED_TOTAL - 1) - j;
+        }
+        else
+        {
+            pixelnumber = j;
+        }
+        _leds[pixelnumber] = color;
     }
 }
 
