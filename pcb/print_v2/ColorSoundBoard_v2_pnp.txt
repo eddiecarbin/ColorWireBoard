@@ -1,0 +1,49 @@
+*Pick And Place List
+*Company=
+*Author=
+*eMail=
+*
+*Project=ColorSoundBoard_v2
+*Date=21:12:26
+*CreatedBy=Fritzing 0.9.4.2019-12-01.CD-498-0-a1ffcea
+*
+*
+*Coordinates in mm, always center of component
+*Origin 0/0=Lower left corner of PCB
+*Rotation in degree (0-360, math. pos.)
+*
+*No;Value;Package;X;Y;Rotation;Side;Name
+1;220;THT;42.2593;-48.6847;-90;Bottom;R11
+2;;;55.0168;-2.73516;0;Bottom;Hole1
+3;;;52.2199;-42.9822;0;Bottom;TXT1
+4;;;55.0089;-71.441;0;Bottom;Hole2
+5;220;THT;42.2593;-66.0976;-90;Bottom;R14
+6;;THT;9.7949;-27.647;0;Bottom;Vol
+7;;;2.79102;-2.56301;0;Bottom;Hole4
+8;;THT;6.06729;-13.0633;0;Bottom;Speaker
+9;220;THT;42.2593;-54.7748;-90;Bottom;R12
+10;220;THT;47.6719;-57.6539;-90;Bottom;R4
+11;;;46.1434;-7.37875;0;Bottom;TXT1
+12;;THT;55.1177;-58.0539;0;Bottom;Output
+13;220;THT;11.9696;-60.0224;0;Bottom;R6
+14;220;THT;42.2593;-60.6874;-90;Bottom;R13
+15;;THT;3.97787;-54.8377;180;Bottom;Input
+16;;;51.9222;-11.3651;0;Bottom;TXT1
+17;;THT;49.5964;-38.2632;0;Bottom;LED
+18;220;THT;11.9696;-55.1978;0;Bottom;R7
+19;;;52.1917;-21.5217;0;Bottom;TXT1
+20;;;53.5082;-37.2932;0;Bottom;TXT1
+21;10;THT;26.1563;-40.0417;90;Bottom;R1
+22;;;2.79102;-71.3745;0;Bottom;Hole3
+23;;;26.511;-10.5811;0;Bottom;DFRobot DFPlayer Mini1
+24;220;THT;44.0112;-44.4739;0;Bottom;R10
+25;;;52.0119;-16.4883;0;Bottom;TXT1
+26;220;THT;47.6719;-51.5638;-90;Bottom;R3
+27;;THT;43.2585;-4.93555;0;Bottom;Power 5v
+28;;;52.102;-26.735;0;Bottom;TXT1
+29;220;THT;11.9696;-50.7331;0;Bottom;R9
+30;;;27.6134;-47.504;180;Bottom;Arduino Micro
+31;220;THT;47.6719;-63.8591;-90;Bottom;R5
+32;220;THT;11.9696;-45.9055;0;Bottom;R8
+33;;THT;48.4102;-19.4511;0;Bottom;Power 24v
+34;;;46.2907;-1.66036;0;Bottom;TXT1
