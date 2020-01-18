@@ -27,11 +27,14 @@ public:
     virtual ~NeonSectionController();
 
 private:
+
+    void effect();
     int section;
     // int length;
     int signal;
     int buttonPin;
     WireState currentState;
+    bool gReverseDirection;
     CRGB *_leds;
     CRGB correctColor;
     // Button cableButton;
