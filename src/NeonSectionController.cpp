@@ -3,38 +3,43 @@
 #include "FastLED.h" // FastLED library. Preferably the latest copy of FastLED 2.1.
 
 #include <FastLED.h> // for short list
-#define LED_TOTAL 4
+// #define LED_TOTAL 3
 
-int section, signal;
+int section;
+int length = 0;
 
 bool gReverseDirection = false;
 
 CRGB *_leds = NULL;
 CRGB correctColor;
 
-WireState currentState = WireState::OFF;
+WireState currentState = WireState::NONE;
 
-NeonSectionController::NeonSectionController(int section, int code)
+NeonSectionController::NeonSectionController(int section, int total)
 {
     this->section = section;
-    this->signal = code;
+    this->length = total;
 }
 
 void NeonSectionController::initialize(struct CRGB *data, CRGB color)
 {
     this->_leds = data;
     this->correctColor = color;
-    // cableButton.read();
-    //Serial.println("init " + color);
-    //drawColor(color);
+    drawColor(color);
 }
 
 void NeonSectionController::drawColor(CRGB color)
 {
-    for (int i = section; i < (section + LED_TOTAL); i++)
+    for (int i = section; i < (section + length); i++)
     {
         _leds[i] = color;
     }
+}
+
+void NeonSectionController::setColor(CRGB color)
+{
+    correctColor = color;
+    drawColor(correctColor);
 }
 
 void NeonSectionController::setState(WireState state)
@@ -49,26 +54,21 @@ void NeonSectionController::setState(WireState state)
     case WireState::OFF:
         drawColor(CRGB::Black);
         break;
-    case WireState::CORRECT:
+    case WireState::ON:
         drawColor(correctColor);
         break;
     default:
         // display wrong effect
-
+        effect();
         break;
     }
 }
 
-int NeonSectionController::getValue()
-{
-    return signal;
-}
-
 void NeonSectionController::update()
 {
-    // cableButton.read();
-    if (currentState == WireState::WRONG)
+    if (currentState == WireState::EFFECT)
     {
+        effect();
     }
 }
 
@@ -86,16 +86,16 @@ void NeonSectionController::effect()
 {
 
     // Array of temperature readings at each simulation cell
-    static byte heat[LED_TOTAL];
+    static byte heat[3];
 
     // Step 1.  Cool down every cell a little
-    for (int i = 0; i < LED_TOTAL; i++)
+    for (int i = 0; i < length; i++)
     {
-        heat[i] = qsub8(heat[i], random8(0, ((COOLING * 10) / LED_TOTAL) + 2));
+        heat[i] = qsub8(heat[i], random8(0, ((COOLING * 10) / length) + 2));
     }
 
     // Step 2.  Heat from each cell drifts 'up' and diffuses a little
-    for (int k = LED_TOTAL - 1; k >= 2; k--)
+    for (int k = length - 1; k >= 2; k--)
     {
         heat[k] = (heat[k - 1] + heat[k - 2] + heat[k - 2]) / 3;
     }
@@ -108,17 +108,17 @@ void NeonSectionController::effect()
     }
 
     // Step 4.  Map from heat cells to LED colors
-    for (int j = 0; j < LED_TOTAL; j++)
+    for (int j = 0; j < length; j++)
     {
         CRGB color = HeatColor(heat[j]);
         int pixelnumber;
         if (gReverseDirection)
         {
-            pixelnumber = (LED_TOTAL - 1) - j;
+            pixelnumber = section + (length - 1) - j;
         }
         else
         {
-            pixelnumber = j;
+            pixelnumber = section + j;
         }
         _leds[pixelnumber] = color;
     }

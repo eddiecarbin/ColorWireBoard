@@ -9,28 +9,28 @@
 
 enum WireState
 {
+    NONE,
     OFF,
-    WRONG,
-    CORRECT
+    EFFECT,
+    ON
 };
 
 class NeonSectionController
 {
 
 public:
-    NeonSectionController(int section, int code);
-    int getValue(void);
+    NeonSectionController(int section, int total );
     void initialize(struct CRGB *data, CRGB color);
     void update(void);
     void setState(WireState state);
+    void setColor(CRGB color);
     void drawColor(CRGB color);
     virtual ~NeonSectionController();
 
 private:
-
     void effect();
     int section;
-    // int length;
+    int length;
     int signal;
     int buttonPin;
     WireState currentState;
