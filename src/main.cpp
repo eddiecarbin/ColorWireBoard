@@ -20,7 +20,8 @@
 #define MIN_SIGNAL 50
 #define COMPLETION_TIMEOUT 15 * 1000
 
-uint8_t max_bright = 255; // Overall brightness definition. It can be changed on the fly.
+uint8_t game_brightness = 180;
+uint8_t complete_brightness = 255; // Overall brightness definition. It can be changed on the fly.
 
 //struct CRGB leds[NUM_LEDS]; // Initialize our LED array.
 CRGB leds[NUM_LEDS];
@@ -128,6 +129,8 @@ void OnStartGameEnter()
   neonController3.setColor(answerArray[3].color);
 
   combinationHasBeenCompleted = false;
+
+  FastLED.setBrightness(game_brightness);
 }
 
 void OnStateStartGameUpdate()
@@ -231,6 +234,7 @@ void OnStateGameLoopUpdate()
   {
     // play sound & start timer!
     combinationHasBeenCompleted = true;
+    FastLED.setBrightness(complete_brightness);
     timer = millis();
   }
 
@@ -258,7 +262,7 @@ void setup()
   // fsm.add_timed_transition(&StateGameLoop, &StateStartGame, 2000, NULL);
 
   FastLED.addLeds<UCS1903, DATA_PIN, BRG>(leds, NUM_LEDS);
-  FastLED.setBrightness(max_bright);
+  FastLED.setBrightness(game_brightness);
 
   neonController0.initialize(leds, wireColor0);
   neonController1.initialize(leds, wireColor1);
