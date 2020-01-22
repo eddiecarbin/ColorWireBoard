@@ -20,7 +20,10 @@
 #define MIN_SIGNAL 50
 #define COMPLETION_TIMEOUT 15 * 1000
 
-uint8_t game_brightness = 180;
+#define SOUND_ON 1
+#define SOUND_ERROR 2
+
+uint8_t game_brightness = 200;
 uint8_t complete_brightness = 255; // Overall brightness definition. It can be changed on the fly.
 
 //struct CRGB leds[NUM_LEDS]; // Initialize our LED array.
@@ -38,8 +41,8 @@ float a0, a1, a2, a3, b0, b1, b2, b3;
 
 bool combinationHasBeenCompleted = false;
 
-//PotMonitor volumePot(A5, 12);
-//SoundPlayer soundPlayer(18, 15);
+PotMonitor volumePot(A5, 12);
+SoundPlayer soundPlayer(18, 15);
 
 NeonSectionController neonController0(1, 3);
 NeonSectionController neonController1(4, 3);
@@ -66,6 +69,11 @@ ColorObject colorToken2 = {wireColor2};
 ColorObject colorToken3 = {wireColor3};
 
 ColorObject answerArray[4] = {colorToken0, colorToken1, colorToken2, colorToken3};
+
+long map2(long x, long in_min, long in_max, long out_min, long out_max)
+{
+  return (x - in_min) * (out_max - out_min + 1) / (in_max - in_min + 1) + out_min;
+}
 
 bool inRange(int value, int d, int range)
 {
@@ -151,25 +159,22 @@ void OnStateGameLoopUpdate()
   a3 = analogRead(A3);
   int correctCount = 0;
 
-  // Serial.println("a0 = " + String(a0));
-  // Serial.println("a1 = " + String(a1));
-  // Serial.println("a2 = " + String(a2));
-  // Serial.println("a3 = " + String(a3));
-  // neonController0.setState(WireState::OFF);
-  // neonController1.setState(WireState::OFF);
-  // neonController2.setState(WireState::OFF);
-  // neonController3.setState(WireState::EFFECT);
-
   if (a0 > MIN_SIGNAL)
   {
     if (answerArray[0].color == findSignalColor(a0))
     {
-      neonController0.setState(WireState::ON);
+      if (neonController0.setState(WireState::ON))
+      {
+        soundPlayer.PlaySound(SOUND_ON);
+      }
       correctCount += 1;
     }
     else
     {
-      neonController0.setState(WireState::EFFECT);
+      if (neonController0.setState(WireState::EFFECT))
+      {
+        soundPlayer.PlaySound(SOUND_ERROR);
+      }
     }
   }
   else
@@ -181,12 +186,18 @@ void OnStateGameLoopUpdate()
   {
     if (answerArray[1].color == findSignalColor(a1))
     {
-      neonController1.setState(WireState::ON);
+      if (neonController1.setState(WireState::ON))
+      {
+        soundPlayer.PlaySound(SOUND_ON);
+      }
       correctCount += 1;
     }
     else
     {
-      neonController1.setState(WireState::EFFECT);
+      if (neonController1.setState(WireState::EFFECT))
+      {
+        soundPlayer.PlaySound(SOUND_ERROR);
+      }
     }
   }
   else
@@ -198,12 +209,18 @@ void OnStateGameLoopUpdate()
   {
     if (answerArray[2].color == findSignalColor(a2))
     {
-      neonController2.setState(WireState::ON);
+      if (neonController2.setState(WireState::ON))
+      {
+        soundPlayer.PlaySound(SOUND_ON);
+      }
       correctCount += 1;
     }
     else
     {
-      neonController2.setState(WireState::EFFECT);
+      if (neonController2.setState(WireState::EFFECT))
+      {
+        soundPlayer.PlaySound(SOUND_ERROR);
+      }
     }
   }
   else
@@ -216,12 +233,19 @@ void OnStateGameLoopUpdate()
   {
     if (answerArray[3].color == findSignalColor(a3))
     {
-      neonController3.setState(WireState::ON);
+
+      if (neonController3.setState(WireState::ON))
+      {
+        soundPlayer.PlaySound(SOUND_ON);
+      }
       correctCount += 1;
     }
     else
     {
-      neonController3.setState(WireState::EFFECT);
+      if (neonController3.setState(WireState::EFFECT))
+      {
+        soundPlayer.  PlaySound(SOUND_ERROR);
+      }
     }
   }
   else
@@ -298,11 +322,21 @@ void setup()
   pinMode(A7, INPUT);
   pinMode(A6, INPUT);
 
+  soundPlayer.initialize();
+
   fsm.goToState(&StateStartGame);
 }
 
 void loop()
 {
+
+  if (volumePot.hasUpdated())
+  {
+    long volume = map2(volumePot.getValue(), 0, 1023, 0, 30);
+    //Serial.println(volume);
+    soundPlayer.volume(volume);
+  }
+
   neonController0.update();
   neonController1.update();
   neonController2.update();
@@ -314,6 +348,8 @@ void loop()
   inputColorController3.update();
 
   fsm.run_machine();
+
+  soundPlayer.update();
 
   FastLED.show();
   // Serial.println("run");

@@ -42,10 +42,10 @@ void NeonSectionController::setColor(CRGB color)
     drawColor(correctColor);
 }
 
-void NeonSectionController::setState(WireState state)
+bool NeonSectionController::setState(WireState state)
 {
     if (state == currentState)
-        return;
+        return false;
 
     currentState = state;
 
@@ -62,6 +62,8 @@ void NeonSectionController::setState(WireState state)
         effect();
         break;
     }
+
+    return true;
 }
 
 void NeonSectionController::update()

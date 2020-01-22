@@ -22,7 +22,7 @@ public:
     NeonSectionController(int section, int total );
     void initialize(struct CRGB *data, CRGB color);
     void update(void);
-    void setState(WireState state);
+    bool setState(WireState state);
     void setColor(CRGB color);
     void drawColor(CRGB color);
     virtual ~NeonSectionController();
