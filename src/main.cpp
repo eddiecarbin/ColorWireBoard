@@ -54,6 +54,11 @@ NeonSectionController inputColorController1(7, 1);
 NeonSectionController inputColorController2(8, 1);
 NeonSectionController inputColorController3(15, 1);
 
+ToggleButton wireButton0(a0, false, 50, false);
+ToggleButton wireButton1(a1, false, 50, false);
+ToggleButton wireButton2(a2, false, 50, false);
+ToggleButton wireButton3(a3, false, 50, false);
+
 unsigned long timer = 0;
 
 struct ColorObject
@@ -95,6 +100,7 @@ void ShuffleArray()
 CRGB findSignalColor(int value)
 {
 
+  b0 = analogRead(A9);
   b0 = analogRead(A9);
   b1 = analogRead(A8);
   b2 = analogRead(A7);
@@ -153,6 +159,10 @@ void OnStateGameLoopEnter()
 void OnStateGameLoopUpdate()
 {
 
+  // if ( wireButton0.changed()){
+  // Serial.println("Wire button 0 changed");
+  // a0 = analogRead(A0);
+  // }
   a0 = analogRead(A0);
   a1 = analogRead(A1);
   a2 = analogRead(A2);
@@ -244,7 +254,7 @@ void OnStateGameLoopUpdate()
     {
       if (neonController3.setState(WireState::EFFECT))
       {
-        soundPlayer.  PlaySound(SOUND_ERROR);
+        soundPlayer.PlaySound(SOUND_ERROR);
       }
     }
   }
@@ -310,6 +320,10 @@ void setup()
 
   randomSeed(analogRead(A4));
 
+  wireButton0.begin();
+  wireButton1.begin();
+  wireButton2.begin();
+  wireButton3.begin();
   //input pins
   pinMode(A0, INPUT);
   pinMode(A1, INPUT);
