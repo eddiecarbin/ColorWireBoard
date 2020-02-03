@@ -38,7 +38,7 @@ void SoundPlayer::initialize()
     myDFPlayer.volume(30); //Set volume value. From 0 to 30
 
     fileCount = myDFPlayer.readFileCounts();
-    // myDFPlayer.play(1); //Play the first mp3
+    myDFPlayer.play(1); //Play the first mp3
 
     Serial.print("file count = ");
     Serial.println(fileCount);

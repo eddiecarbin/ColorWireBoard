@@ -61,6 +61,8 @@ ToggleButton wireButton3(a3, false, 50, false);
 
 unsigned long timer = 0;
 
+bool restartMap = false;
+
 struct ColorObject
 {
   CRGB color;
@@ -125,6 +127,13 @@ CRGB findSignalColor(int value)
   return CRGB::Black;
 }
 
+void playSound(int idx)
+{
+  if (!restartMap)
+  {
+    soundPlayer.PlaySound(idx);
+  }
+}
 //Setup game board
 void OnStartGameEnter()
 {
@@ -144,6 +153,7 @@ void OnStartGameEnter()
 
   combinationHasBeenCompleted = false;
 
+  restartMap = true;
   FastLED.setBrightness(game_brightness);
 }
 
@@ -169,13 +179,17 @@ void OnStateGameLoopUpdate()
   a3 = analogRead(A3);
   int correctCount = 0;
 
+  if (wireButton0.wasPressed() || wireButton0.wasReleased())
+  {
+    a0 = analogRead(A0);
+  }
   if (a0 > MIN_SIGNAL)
   {
     if (answerArray[0].color == findSignalColor(a0))
     {
       if (neonController0.setState(WireState::ON))
       {
-        soundPlayer.PlaySound(SOUND_ON);
+        playSound(SOUND_ON);
       }
       correctCount += 1;
     }
@@ -183,7 +197,7 @@ void OnStateGameLoopUpdate()
     {
       if (neonController0.setState(WireState::EFFECT))
       {
-        soundPlayer.PlaySound(SOUND_ERROR);
+        playSound(SOUND_ERROR);
       }
     }
   }
@@ -198,7 +212,7 @@ void OnStateGameLoopUpdate()
     {
       if (neonController1.setState(WireState::ON))
       {
-        soundPlayer.PlaySound(SOUND_ON);
+        playSound(SOUND_ON);
       }
       correctCount += 1;
     }
@@ -206,7 +220,7 @@ void OnStateGameLoopUpdate()
     {
       if (neonController1.setState(WireState::EFFECT))
       {
-        soundPlayer.PlaySound(SOUND_ERROR);
+        playSound(SOUND_ERROR);
       }
     }
   }
@@ -221,7 +235,7 @@ void OnStateGameLoopUpdate()
     {
       if (neonController2.setState(WireState::ON))
       {
-        soundPlayer.PlaySound(SOUND_ON);
+        playSound(SOUND_ON);
       }
       correctCount += 1;
     }
@@ -229,7 +243,7 @@ void OnStateGameLoopUpdate()
     {
       if (neonController2.setState(WireState::EFFECT))
       {
-        soundPlayer.PlaySound(SOUND_ERROR);
+        playSound(SOUND_ERROR);
       }
     }
   }
@@ -246,7 +260,7 @@ void OnStateGameLoopUpdate()
 
       if (neonController3.setState(WireState::ON))
       {
-        soundPlayer.PlaySound(SOUND_ON);
+        playSound(SOUND_ON);
       }
       correctCount += 1;
     }
@@ -254,7 +268,7 @@ void OnStateGameLoopUpdate()
     {
       if (neonController3.setState(WireState::EFFECT))
       {
-        soundPlayer.PlaySound(SOUND_ERROR);
+        playSound(SOUND_ERROR);
       }
     }
   }
@@ -263,6 +277,8 @@ void OnStateGameLoopUpdate()
     combinationHasBeenCompleted = false;
     neonController3.setState(WireState::OFF);
   }
+
+  restartMap = false;
 
   if (!combinationHasBeenCompleted && correctCount >= 4)
   {
