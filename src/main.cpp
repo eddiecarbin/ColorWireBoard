@@ -5,7 +5,7 @@
 #include "../lib/PotMonitor/PotMonitor.h"
 #include "NeonSectionController.h"
 #include "FastLED.h" // FastLED library. Preferably the latest copy of FastLED 2.1.
-
+#include "AnalogButton.cpp"
 #include <FastLED.h> // for short list
 
 // Fixed definitions cannot change on the fly.
@@ -54,10 +54,15 @@ NeonSectionController inputColorController1(7, 1);
 NeonSectionController inputColorController2(8, 1);
 NeonSectionController inputColorController3(15, 1);
 
-ToggleButton wireButton0(a0, false, 50, true);
-ToggleButton wireButton1(a1, false, 50, true);
-ToggleButton wireButton2(a2, false, 50, true);
-ToggleButton wireButton3(a3, false, 50, true);
+// ToggleButton wireButton0(A0, false, 50, true);
+// ToggleButton wireButton1(A1, false, 50, true);
+// ToggleButton wireButton2(A2, false, 50, true);
+// ToggleButton wireButton3(A3, false, 50, true);
+
+AnalogButton wireButton0(A0);
+AnalogButton wireButton1(A1);
+AnalogButton wireButton2(A2);
+AnalogButton wireButton3(A3);
 
 unsigned long timer = 0;
 
@@ -172,7 +177,7 @@ void OnStateGameLoopUpdate()
   a1 = analogRead(A1);
   a2 = analogRead(A2);
   a3 = analogRead(A3);
-  
+
   int correctCount = 0;
 
   if (wireButton0.wasPressed() || wireButton0.wasReleased() || restartMap)
