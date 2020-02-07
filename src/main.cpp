@@ -5,7 +5,7 @@
 #include "../lib/PotMonitor/PotMonitor.h"
 #include "NeonSectionController.h"
 #include "FastLED.h" // FastLED library. Preferably the latest copy of FastLED 2.1.
-#include "AnalogButton.cpp"
+#include "AnalogButton.h"
 #include <FastLED.h> // for short list
 
 // Fixed definitions cannot change on the fly.
@@ -18,7 +18,7 @@
 #define GO_TO_START_GAME 2
 
 #define MIN_SIGNAL 50
-#define COMPLETION_TIMEOUT 15 * 1000
+#define COMPLETION_TIMEOUT 8 * 1000
 
 #define SOUND_ON 1
 #define SOUND_ERROR 2
@@ -37,9 +37,11 @@ CRGB wireColor3 = CRGB::Blue;
 State StateDoNothing(NULL, NULL, NULL);
 Fsm fsm(&StateDoNothing);
 
-float a0, a1, a2, a3, b0, b1, b2, b3;
-
 bool combinationHasBeenCompleted = false;
+bool wireCorrect0 = false;
+bool wireCorrect1 = false;
+bool wireCorrect2 = false;
+bool wireCorrect3 = false;
 
 PotMonitor volumePot(A5, 12);
 SoundPlayer soundPlayer(18, 15);
@@ -107,30 +109,41 @@ void ShuffleArray()
 CRGB findSignalColor(int value)
 {
 
-  b0 = analogRead(A9);
-  b1 = analogRead(A8);
-  b2 = analogRead(A7);
-  b3 = analogRead(A6);
-
-  if (inRange(b0, value, 20))
+  int pinVal = analogRead(A9);
+  if (inRange(pinVal, value, 20))
   {
+    Serial.println("Green");
     return wireColor0;
   }
-  if (inRange(b1, value, 20))
+
+  pinVal = analogRead(A8);
+  if (inRange(pinVal, value, 20))
   {
+    Serial.println("Red");
     return wireColor1;
   }
-  if (inRange(b2, value, 20))
+
+  pinVal = analogRead(A7);
+  if (inRange(pinVal, value, 20))
   {
+    Serial.println("Yellow");
     return wireColor2;
   }
-  if (inRange(b3, value, 20))
+
+  pinVal = analogRead(A6);
+  if (inRange(pinVal, value, 20))
   {
+    Serial.println("Yellow");
+
     return wireColor3;
   }
   return CRGB::Black;
 }
 
+bool mapCompleted()
+{
+  return (wireCorrect0 && wireCorrect1 && wireCorrect2 && wireCorrect3);
+}
 void playSound(int idx)
 {
   if (!restartMap)
@@ -173,141 +186,150 @@ void OnStateGameLoopEnter()
 void OnStateGameLoopUpdate()
 {
 
-  a0 = analogRead(A0);
-  a1 = analogRead(A1);
-  a2 = analogRead(A2);
-  a3 = analogRead(A3);
+  wireButton0.read();
+  wireButton1.read();
+  wireButton2.read();
+  wireButton3.read();
 
-  int correctCount = 0;
+  int pinVal = 0;
 
   if (wireButton0.wasPressed() || wireButton0.wasReleased() || restartMap)
   {
-    a0 = analogRead(A0);
+    pinVal = analogRead(A0);
     Serial.println("wireButton 0");
+    wireCorrect0 = false;
+    if (pinVal > MIN_SIGNAL)
+    {
+      if (answerArray[0].color == findSignalColor(pinVal))
+      {
+        if (neonController0.setState(WireState::ON))
+        {
+          playSound(SOUND_ON);
+        }
+        wireCorrect0 = true;
+      }
+      else
+      {
+        if (neonController0.setState(WireState::EFFECT))
+        {
+          playSound(SOUND_ERROR);
+        }
+      }
+    }
+    else
+    {
+      combinationHasBeenCompleted = false;
+      neonController0.setState(WireState::OFF);
+    }
   }
-  if (wireButton1.wasPressed() || wireButton1.wasReleased())
+  if (wireButton1.wasPressed() || wireButton1.wasReleased() || restartMap)
   {
-    a1 = analogRead(A1);
+    pinVal = analogRead(A1);
     Serial.println("wireButton 1");
+    wireCorrect1 = false;
+
+    if (pinVal > MIN_SIGNAL)
+    {
+      if (answerArray[1].color == findSignalColor(pinVal))
+      {
+        if (neonController1.setState(WireState::ON))
+        {
+          playSound(SOUND_ON);
+        }
+        wireCorrect1 = true;
+      }
+      else
+      {
+        if (neonController1.setState(WireState::EFFECT))
+        {
+          playSound(SOUND_ERROR);
+        }
+      }
+    }
+    else
+    {
+      combinationHasBeenCompleted = false;
+      neonController1.setState(WireState::OFF);
+    }
   }
-  if (wireButton2.wasPressed() || wireButton2.wasReleased())
+  if (wireButton2.wasPressed() || wireButton2.wasReleased() || restartMap)
   {
-    a2 = analogRead(A2);
+    pinVal = analogRead(A2);
     Serial.println("wireButton 2");
+    wireCorrect2 = false;
+
+    if (pinVal > MIN_SIGNAL)
+    {
+      if (answerArray[2].color == findSignalColor(pinVal))
+      {
+        if (neonController2.setState(WireState::ON))
+        {
+          playSound(SOUND_ON);
+        }
+        wireCorrect2 = true;
+      }
+      else
+      {
+        if (neonController2.setState(WireState::EFFECT))
+        {
+          playSound(SOUND_ERROR);
+        }
+      }
+    }
+    else
+    {
+      combinationHasBeenCompleted = false;
+      neonController2.setState(WireState::OFF);
+    }
   }
-  if (wireButton3.wasPressed() || wireButton3.wasReleased())
+  if (wireButton3.wasPressed() || wireButton3.wasReleased() || restartMap)
   {
-    a3 = analogRead(A3);
+    pinVal = analogRead(A3);
     Serial.println("wireButton 3");
-  }
-  if (a0 > MIN_SIGNAL)
-  {
-    if (answerArray[0].color == findSignalColor(a0))
-    {
-      if (neonController0.setState(WireState::ON))
-      {
-        playSound(SOUND_ON);
-      }
-      correctCount += 1;
-    }
-    else
-    {
-      if (neonController0.setState(WireState::EFFECT))
-      {
-        playSound(SOUND_ERROR);
-      }
-    }
-  }
-  else
-  {
-    combinationHasBeenCompleted = false;
-    neonController0.setState(WireState::OFF);
-  }
-  if (a1 > MIN_SIGNAL)
-  {
-    if (answerArray[1].color == findSignalColor(a1))
-    {
-      if (neonController1.setState(WireState::ON))
-      {
-        playSound(SOUND_ON);
-      }
-      correctCount += 1;
-    }
-    else
-    {
-      if (neonController1.setState(WireState::EFFECT))
-      {
-        playSound(SOUND_ERROR);
-      }
-    }
-  }
-  else
-  {
-    combinationHasBeenCompleted = false;
-    neonController1.setState(WireState::OFF);
-  }
-  if (a2 > MIN_SIGNAL)
-  {
-    if (answerArray[2].color == findSignalColor(a2))
-    {
-      if (neonController2.setState(WireState::ON))
-      {
-        playSound(SOUND_ON);
-      }
-      correctCount += 1;
-    }
-    else
-    {
-      if (neonController2.setState(WireState::EFFECT))
-      {
-        playSound(SOUND_ERROR);
-      }
-    }
-  }
-  else
-  {
-    combinationHasBeenCompleted = false;
-    neonController2.setState(WireState::OFF);
-  }
+    wireCorrect3 = false;
 
-  if (a3 > MIN_SIGNAL)
-  {
-    if (answerArray[3].color == findSignalColor(a3))
+    if (pinVal > MIN_SIGNAL)
     {
-
-      if (neonController3.setState(WireState::ON))
+      if (answerArray[3].color == findSignalColor(pinVal))
       {
-        playSound(SOUND_ON);
+
+        if (neonController3.setState(WireState::ON))
+        {
+          playSound(SOUND_ON);
+        }
+        wireCorrect3 = true;
       }
-      correctCount += 1;
+      else
+      {
+
+        if (neonController3.setState(WireState::EFFECT))
+        {
+          playSound(SOUND_ERROR);
+        }
+      }
     }
     else
     {
-      if (neonController3.setState(WireState::EFFECT))
-      {
-        playSound(SOUND_ERROR);
-      }
+      combinationHasBeenCompleted = false;
+      neonController3.setState(WireState::OFF);
     }
-  }
-  else
-  {
-    combinationHasBeenCompleted = false;
-    neonController3.setState(WireState::OFF);
   }
 
   restartMap = false;
 
-  if (!combinationHasBeenCompleted && correctCount >= 4)
+  if (!combinationHasBeenCompleted && mapCompleted())
   {
     // play sound & start timer!
     combinationHasBeenCompleted = true;
     FastLED.setBrightness(complete_brightness);
     timer = millis();
+    Serial.println("completed map");
   }
 
   // check to reset game board
   if (combinationHasBeenCompleted && (millis() - timer) > COMPLETION_TIMEOUT)
   {
+    Serial.println("go to start game");
     fsm.trigger(GO_TO_START_GAME);
   }
 }
