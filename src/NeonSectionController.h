@@ -19,7 +19,7 @@ class NeonSectionController
 {
 
 public:
-    NeonSectionController(int section, int total );
+    NeonSectionController(int section, int total);
     void initialize(struct CRGB *data, CRGB color);
     void update(void);
     bool setState(WireState state);
@@ -28,7 +28,8 @@ public:
     virtual ~NeonSectionController();
 
 private:
-    void effect();
+    void effect(void);
+    void effect2(void);
     int section;
     int length;
     int signal;
@@ -36,6 +37,7 @@ private:
     WireState currentState;
     bool gReverseDirection;
     CRGB *_leds;
+    uint32_t timebase;
     CRGB correctColor;
     // Button cableButton;
 };
