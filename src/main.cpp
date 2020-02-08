@@ -317,6 +317,10 @@ void OnStateGameLoopUpdate()
 
   restartMap = false;
 
+  //neonController0.setState(WireState::EFFECT);
+  //neonController2.setState(WireState::EFFECT);
+
+
   if (!combinationHasBeenCompleted && mapCompleted())
   {
     // play sound & start timer!
@@ -367,9 +371,6 @@ void setup()
   inputColorController1.setState(WireState::ON);
   inputColorController2.setState(WireState::ON);
   inputColorController3.setState(WireState::ON);
-
-  neonController0.setState(WireState::EFFECT);
-  neonController2.setState(WireState::ON);
 
   Serial.println(" Start up activitiy");
 
